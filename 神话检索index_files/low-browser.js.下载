@@ -1,0 +1,137 @@
+!(function(){(function () {
+  if ("ActiveXObject" in window) {
+    document.write(
+      '<style>' +
+      '.app-error-panel{' +
+      'width:100%;height:99%;padding-top:1px;position: relative;z-index: 999999;background: #fff;' +
+      '}' +
+      '.message-block{' +
+      'width: 450px;' +
+      'margin:0 auto;' +
+      "margin-top:20%" +
+      '}' +
+      '.text{' +
+      'margin-top: 15px;' +
+      'font-size: 16px;' +
+      'color: #333333;' +
+      '}' +
+      '.title{' +
+      'font-size:24px;' +
+      "}" +
+      ".downchrome{" +
+      "font-size:14px;" +
+      "text-align: center;" +
+      "margin-top:25px;" +
+      "color: #333333;" +
+      "}" +
+      ".goa{" +
+      "color: #1c7eee" +
+      "}" +
+      '</style>' +
+      '<div class="app-error-panel">' +
+      '<div class="message-block">' +
+      '<div class="message-inner">' +
+      '<div class="title">此网站更适用于Chrome</div>' +
+      '<div class="text">为正常使用该网站，建议使用Chrome浏览器，以获得更好的速度，使用体验和安全性</div>' +
+      '<div class="downchrome">没有Chrome浏览器？<a target="_blank" class="goa" href="https://www.google.com/intl/zh-CN/chrome/">立即下载</a></div>' +
+      "</div>" +
+      "</div>" +
+      "</div>");
+
+    return
+  }
+
+  const detectSupportCssWhere = function (){
+    const id = 'detectSupportCssWhere222'
+    const style = document.createElement('style')
+    style.innerText = `
+      :where(#${id}){display: flex!important;}
+      
+      .com-check-support-where.not-support {
+          position: fixed;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0,0,0,.8);
+          z-index: 999999999
+      }
+      
+      .com-check-support-where_inner {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate3d(-50%,-50%,0);
+          border-radius: 10px;
+          background: #fff;
+          padding: 26px
+      }
+      
+      .com-check-support-where_tip {
+          font-size: 13px;
+          text-align: center
+      }
+      
+      .com-check-support-where_ok {
+          width: 100px;
+          height: 36px;
+          line-height: 36px;
+          text-align: center;
+          background: #2d2d2d;
+          color: #fff;
+          font-size: 13px;
+          margin: 30px auto 0;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: all .3s
+      }
+      
+      .com-check-support-where_ok:hover {
+          opacity: .9
+      }
+    `.replace(/\n/g, ' ');
+    document.head.appendChild(style)
+
+    const $span = document.createElement('span')
+    $span.style.cssText = `position: absolute; left: 0; top: -999px; display: none;`
+    $span.setAttribute('id', id)
+    document.body.appendChild($span)
+
+    const check = function () {
+      const display = window.getComputedStyle($span).display
+      const supportCssWhere = display === 'flex'
+
+      if(supportCssWhere){
+        return
+      }
+
+      const $div = document.createElement('div')
+      $div.innerHTML = `
+        <div class="com-check-support-where not-support"><div class="com-check-support-where_inner"><div class="com-check-support-where_tip">检测到您的浏览器比较老旧，建议您使用谷歌浏览器以获得最佳使用体验</div><div class="com-check-support-where_ok">知道了</div></div></div>
+      `
+      document.body.appendChild($div)
+
+      $div.getElementsByClassName('com-check-support-where_ok')[0].addEventListener('click', function() {
+        document.body.removeChild($div)
+      })
+
+      const insertLink = function (href){
+        const $link = document.createElement('link')
+        $link.setAttribute('rel', 'stylesheet')
+        $link.setAttribute('type', 'text/css')
+        $link.setAttribute('href', href)
+        document.head.appendChild($link)
+      }
+
+      insertLink('/css/fix-ant-where.css')
+      insertLink('/css/fix-ant-where2.css')
+    }
+
+    setTimeout(check, 100)
+  }
+
+  // 只检测桌面端
+  if(document.documentElement.clientWidth > 750 && !navigator.userAgent.match(/iphone|ipad|ipod|Mobile|pad|Android/i)) {
+    setTimeout(detectSupportCssWhere, 100)
+  }
+})()}());

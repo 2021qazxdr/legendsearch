@@ -1,0 +1,84 @@
+!(function(){(function () {
+
+  // 移动端访问跳到m站
+  if (/Mobile|Android|iphone|ipod/i.test(navigator.userAgent)) {
+    sessionStorage.setItem("formOrigin", "pc");
+    window.location.replace(location.href.replace(location.origin, location.origin + '/m'))
+    return
+  }
+
+  // 取url参数
+  const searchObj = location.search
+    .replace(/^\?/, "")
+    .split("&")
+    .reduce((pre, cur) => {
+      const [key, value] = cur.split("=");
+      key && (pre[key] = value || null);
+      return pre;
+    }, {});
+
+  // 推广站要用。 将searchObj存到cookie，键名为promoteUser，时间永久
+  if (searchObj.userid && searchObj.type) {
+    localStorage.setItem(
+      `promoteUser`,
+      JSON.stringify({...searchObj, source: "PC"})
+    );
+  }
+
+  // 当url里有token时，把url里的token写入storage，并刷新网页（去掉token）
+  if (searchObj.token) {
+    const token = decodeURIComponent(searchObj.token)
+
+    if (token !== localStorage.getItem('lbChatToken')) {
+      localStorage.setItem('lbChatToken', token)
+      localStorage.removeItem('lbChatUserInfo')
+    }
+
+    delete searchObj.token
+
+    delete searchObj.userid
+    delete searchObj.type
+
+    let url = location.pathname
+    if (Object.keys(searchObj).length) {
+      url += '?' + Object.entries(searchObj).map(item => {
+        return item[0] + '=' + (item[1] || '')
+      }, '').join('&')
+    }
+
+    if (location.hash) {
+      url += location.hash
+    }
+
+    if (!location.pathname.includes('iframe/contact')) {
+      location.replace(url)
+    }
+  }
+
+
+  // const p = window.history.pushState
+  // const r = window.history.replaceState
+  //
+  //
+  // window.history.pushState = function (...args) {
+  //   console.log('++++++++')
+  //   if(location.pathname === '/chat' && args[2] === '/'){
+  //     console.log('window.history.pushState')
+  //     debugger
+  //   }
+  //
+  //   p.apply(window.history, args)
+  // }
+  //
+  // window.history.replaceState = function (...args) {
+  //   console.log('----------')
+  //   if(location.pathname === '/chat' && args[2] === '/'){
+  //     console.log('window.history.replaceState')
+  //     debugger
+  //   }
+  //
+  //   r.apply(window.history, args)
+  // }
+
+})();
+}());
